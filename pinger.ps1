@@ -102,7 +102,7 @@ while ($true) {
 
         if ($email) {
             $secpasswd = ConvertTo-SecureString "SECRETPASSWORD" -AsPlainText -Force
-            $mycreds = New-Object System.Management.Automation.PSCredential ("backup@mcc.vniiem.ru", $secpasswd)
+            $mycreds = New-Object System.Management.Automation.PSCredential ("email@example.com", $secpasswd)
             $encoding = [System.Text.Encoding]::UTF8
             $attachment = $csvfile + '.7z'
             Send-MailMessage -To "email@example.com" -Subject "Ping $destination $rotate_time" -Attachments $attachment -SmtpServer "smtp.example.com" -Credential $mycreds -Port "587" -UseSsl -from "email@example.com" -Encoding $encoding
