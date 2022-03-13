@@ -17,7 +17,7 @@ Easy ping with timestamp, log, email notifications.
 |**-help**|Help screen. No options at all to have the same.|False|
 
 ## OUI macro for Notepad++
-Make your own OUI (Organizationally Unique Identifier) text file uses Notepad++ for hash table.
+Make your own OUI (Organizationally Unique Identifier) text file with Notepad++ for hash table.
 1. Open oui_macro.txt and copy/paste all from it to "%AppData%\Notepad++\shortcuts.xml"
 2. Download https://standards.ieee.org/develop/regauth/oui/oui.csv
 3. Open downloaded oui.csv in Notepad++. You see somethig like this:
@@ -38,13 +38,46 @@ Make your own OUI (Organizationally Unique Identifier) text file uses Notepad++ 
 6. Delete strange dublicates (delete and leave only one):
     - 080030 
     - 0001C8
+7. Save file as "oui.txt"
+8. <details>
+    <summary>Example of using on Powershell</summary>
+    ```
+    $oui = Get-Content -raw .\oui.txt | ConvertFrom-StringData
+    $MAC=("cc-b1-1a-5b-c1-b9").ToUpper()
+    $vendor = $oui[$MAC.replace(':', '').replace('-', '')[0..5] -join '']
+    Remove-Variable $oui
+    $vendor
+    Samsung Electronics Co.
+    ```
+</details>
+9. <details>
+    <summary>Macro actions</summary>
 
-```{admonition} Click the button to reveal!
-Some hidden toggle content!
-```
+    ```
+    replace
 
-```{toggle}
-Some hidden toggle content!
+    MA-L,
+    <nothing!>
 
-![](../images/cool.jpg)
-```
+    ([0-9a-fA-F]{6},)("(.*?)")((,".*")|(.*))
+    \1\2
+    
+    ^([0-9a-fA-F]{6}),
+    "\1",
+
+    ^("[0-9a-fA-F]{6}",)(.*?)$
+    \1\2"
+
+    ^("[0-9a-fA-F]{6}",)([^"](.*?))$
+    \1"\2
+
+    ","
+    =
+
+    "
+    <nothing!>
+
+    ^(.*=[^,]*)(.*)
+    \1
+    ```
+</details>
