@@ -38,3 +38,13 @@ Make your own OUI (Organizationally Unique Identifier) text file uses Notepad++ 
 6. Delete strange dublicates (delete and leave only one):
     - 080030 
     - 0001C8
+
+```{admonition} Click the button to reveal!
+Some hidden toggle content!
+```
+
+```{toggle}
+Some hidden toggle content!
+
+![](../images/cool.jpg)
+```
