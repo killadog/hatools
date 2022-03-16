@@ -1,6 +1,13 @@
 # hatools
 *Happy Admin Tools*
-## Pinger
+
+- [pinger](#mht)
+- [OUI macro for Notepad++](#oui)
+- [wol](#wol)
+
+---
+
+## Pinger {#mht}
 Easy ping with timestamp, log, email notifications.
 
 ### Pinger command syntax
@@ -16,7 +23,9 @@ Easy ping with timestamp, log, email notifications.
 |**-email**|Send email (-log and -alarm must be enabled)|False|
 |**-help**|Help screen. No options at all to have the same.|False|
 
-## OUI macro for Notepad++
+---
+
+## OUI macro for Notepad++ {#oui}
 Make your own OUI (Organizationally Unique Identifier) text file with Notepad++ for hash table.
 1. Open oui_macro.txt and copy/paste all from it to "%AppData%\Notepad++\shortcuts.xml"
 2. Download https://standards.ieee.org/develop/regauth/oui/oui.csv
@@ -39,8 +48,9 @@ Make your own OUI (Organizationally Unique Identifier) text file with Notepad++ 
     - 080030 
     - 0001C8
 7. Save file as "oui.txt"
-8. <details>
+8.  <details>
     <summary>Example of using on Powershell</summary>
+    
     ```
     $oui = Get-Content -raw .\oui.txt | ConvertFrom-StringData
     $MAC=("cc-b1-1a-5b-c1-b9").ToUpper()
@@ -49,8 +59,9 @@ Make your own OUI (Organizationally Unique Identifier) text file with Notepad++ 
     $vendor
     Samsung Electronics Co.
     ```
-</details>
-9. <details>
+    
+    </details>
+ 9. <details>
     <summary>Macro actions</summary>
 
     ```
@@ -80,4 +91,8 @@ Make your own OUI (Organizationally Unique Identifier) text file with Notepad++ 
     ^(.*=[^,]*)(.*)
     \1
     ```
-</details>
+    </details>
+
+---
+##WOL {#wol}
+Wake-on-LAN

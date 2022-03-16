@@ -20,7 +20,7 @@ if ($help -or !$mac) {
 
 if ($mac -notmatch '^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$') {
     $PSStyle.Formatting.Error = $PSStyle.Background.BrightRed + $PSStyle.Foreground.BrightWhite
-    Write-Error "Not valid MAC address! Syntax: FF-FF-FF-FF-FF-FF or FF:FF:FF:FF:FF:FF"
+    Write-Error "Not valid MAC address! Syntax: AA-BB-CC-DD-EE-FF or AA:BB:CC:DD:EE:FF or AABBCCDDEEFF"
     exit
 }
 
@@ -33,7 +33,8 @@ $MagicPacket = [Byte[]] (, 0xFF * 6) + ($MacByteArray * 16)
 $ports = 0, 7, 9
 ForEach ($port in $ports) {
     $UdpClient = New-Object System.Net.Sockets.UdpClient
-    $UdpClient.Connect(([System.Net.IPAddress]::Broadcast), $port)
+    #$UdpClient.Connect(([System.Net.IPAddress]::Broadcast), $port)
+    $UdpClient.Connect('192.168.13.255', $port)
     $UdpClient.Send($MagicPacket, $MagicPacket.Length) | Out-Null
     Write-Host $MagicPacket
     $UdpClient.Close()
