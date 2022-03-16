@@ -46,13 +46,14 @@ $all_time = Measure-Command {
         }
         else {
             $newName = '{0}_{1}_{2}' -f $_.Directory.Parent.Name, $_.Directory.Name, $_.Name
+            $newName = $newName -replace ':'
         }
         Copy-Item $_ -Destination (Join-Path -Path $destination -ChildPath $newName)
         $files += 1
-        $status = " $files / $files_to_copy - $_.Name"
+        $status = " $files / $files_to_copy - $($_.Name)"
         #Write-Progress -Activity "Ping" -Status $status -PercentComplete (($files / $files_to_copy) * 100)
-        Write-Progress -Activity "Ping" -Status $status -PercentComplete (($files_to_copy / 100) * $files)
-        Start-Sleep -Milliseconds 250  
+        Write-Progress -Activity "Ping" -Status $status -PercentComplete ($files / ($files_to_copy / 100) )
+        Start-Sleep -Milliseconds 100  
     }
 }
 $all_time = $all_time.ToString().SubString(0, 13)
