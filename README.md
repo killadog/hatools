@@ -1,6 +1,8 @@
 # hatools
 *Happy Admin Tools*
 
+## Table of contents
+
 - [pinger](#pinger)
 - [OUI macro for Notepad++](#oui-macro-for-notepad)
 - [wol](#wol)
@@ -26,10 +28,11 @@ Easy ping with timestamp, log, email notifications.
 ---
 
 ## OUI macro for Notepad++
-Make your own OUI (Organizationally Unique Identifier) text file with Notepad++ for hash table.
-1. Open oui_macro.txt and copy/paste all from it to "%AppData%\Notepad++\shortcuts.xml"
+You can use ready `oui.txt` from this repository or make your own fresh OUI (Organizationally Unique Identifier) text file with Notepad++ for hash table:
+
+1. Open `oui_macro.txt` and copy/paste all from it to `%AppData%\Notepad++\shortcuts.xml`
 2. Download https://standards.ieee.org/develop/regauth/oui/oui.csv
-3. Open downloaded oui.csv in Notepad++. You see somethig like this:
+3. Open downloaded `oui.csv` in Notepad++. You see somethig like this:
     ```
     ...
     MA-L,94DC4E,"AEV, spol. s r. o.",Jozky Silneho 2783/9 Kromeriz  CZ 76701 
@@ -47,53 +50,64 @@ Make your own OUI (Organizationally Unique Identifier) text file with Notepad++ 
 6. Delete strange dublicates (delete and leave only one):
     - 080030 
     - 0001C8
-7. Save file as "oui.txt"
-8.  <details>
-    <summary>Example of using on Powershell</summary>
+7. Save file as `oui.txt`
+8. <details>
+   <summary>Example of using on Powershell</summary>
+   
+   ```
+   $oui = Get-Content -raw .\oui.txt | ConvertFrom-StringData
+   $MAC=("cc-b1-1a-5b-c1-b9").ToUpper()
+   $vendor = $oui[$MAC.replace(':', '').replace('-', '')[0..5] -join '']
+   Remove-Variable $oui
+   $vendor
+   Samsung Electronics Co.
+   ```
+   
+   </details>
+9. <details>
+   <summary>Macro actions</summary>
+
+   ```
+   Replace every pair of lines (set radio button 'Regular expression')
+
+   MA-L,
+   <nothing!>
+
+   ([0-9a-fA-F]{6},)("(.*?)")((,".*")|(.*))
+   \1\2
     
-    ```
-    $oui = Get-Content -raw .\oui.txt | ConvertFrom-StringData
-    $MAC=("cc-b1-1a-5b-c1-b9").ToUpper()
-    $vendor = $oui[$MAC.replace(':', '').replace('-', '')[0..5] -join '']
-    Remove-Variable $oui
-    $vendor
-    Samsung Electronics Co.
-    ```
-    
-    </details>
- 9. <details>
-    <summary>Macro actions</summary>
+   ^([0-9a-fA-F]{6}),
+   "\1",
 
-    ```
-    replace
+   ^("[0-9a-fA-F]{6}",)(.*?)$
+   \1\2"
 
-    MA-L,
-    <nothing!>
+   ^("[0-9a-fA-F]{6}",)([^"](.*?))$
+   \1"\2
 
-    ([0-9a-fA-F]{6},)("(.*?)")((,".*")|(.*))
-    \1\2
-    
-    ^([0-9a-fA-F]{6}),
-    "\1",
+   ","
+   =
 
-    ^("[0-9a-fA-F]{6}",)(.*?)$
-    \1\2"
+   "
+   <nothing!>
 
-    ^("[0-9a-fA-F]{6}",)([^"](.*?))$
-    \1"\2
+   ^(.*=[^,]*)(.*)
+   \1
+   ```
 
-    ","
-    =
+   </details>
 
-    "
-    <nothing!>
-
-    ^(.*=[^,]*)(.*)
-    \1
-    ```
-
-    </details>
-
+   [Table of contents](#table-of-contents)
 ---
 ## WOL
 Wake-on-LAN
+
+### Pinger command syntax
+
+**.\wol.ps1** **-mac** *mac_address* [**-ip** *ip_address*] [**-help**] 
+
+|Options|Explanation|Default value|
+|---|---|:---:|
+|**-mac**|MAC address to wake up||
+|**-ip**|IP address to check ping after wake up||
+|**-help**|Help screen. No options at all to have the same.|False|
