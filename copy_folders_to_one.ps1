@@ -5,7 +5,7 @@
 param (
     [parameter(Mandatory = $false)][string]$source # Path to source
     , [parameter(Mandatory = $false)][string]$destination # Path to destination
-    , [parameter(Mandatory = $false)][string[]]$include # Include
+    , [parameter(Mandatory = $false)][string[]]$include # Include files by extensions
     , [parameter(Mandatory = $false)][switch]$realname # Didn't rename files
     , [parameter(Mandatory = $false)][switch]$help # This help screen. No options at all to have the same.
 )
@@ -37,24 +37,16 @@ if (!(Test-Path -Path $destination -PathType Container)) {
     $null = New-Item -Path $destination -ItemType Directory
 }
 
-$all_time = Measure-Command {
-    $files_to_copy = (Get-ChildItem -Path $source -Include $include_filter -File -Recurse | Measure-Object).Count
-    Write-Host($files_to_copy)
-    Get-ChildItem -Path $source -Include $include_filter -File -Recurse | ForEach-Object {
-        if ($realname) {
-            $newName = $_.Name    
-        }
-        else {
-            $newName = '{0}_{1}_{2}' -f $_.Directory.Parent.Name, $_.Directory.Name, $_.Name
-            $newName = $newName -replace ':'
-        }
-        Copy-Item $_ -Destination (Join-Path -Path $destination -ChildPath $newName)
-        $files += 1
-        $status = " $files / $files_to_copy - $($_.Name)"
-        #Write-Progress -Activity "Ping" -Status $status -PercentComplete (($files / $files_to_copy) * 100)
-        Write-Progress -Activity "Ping" -Status $status -PercentComplete ($files / ($files_to_copy / 100) )
-        Start-Sleep -Milliseconds 100  
+Measure-Command {
+    $files_to_copy = Get-ChildItem -Path $source -Include $include_filter -File -Recurse 
+    $number_of_files = ($files_to_copy | Measure-Object).Count
+    Write-Host("Copying $number_of_files files" )
+    $files_to_copy | ForEach-Object {
+        $realname ? ($newName = $_.Name) : ($newName = '{0}_{1}_{2}' -f ($_.Directory.Parent.Name -replace ":\\"), $_.Directory.Name, $_.Name)
+        Copy-Item $_ -Destination (Join-Path -Path $destination -ChildPath $newName) -Force
+        $status = " $files / $number_of_files - $($_.Name)"
+        Write-Progress -Activity "Copy" -Status $status -PercentComplete (++$files / ($number_of_files / 100) )
+        Start-Sleep -Milliseconds 50  
     }
-}
-$all_time = $all_time.ToString().SubString(0, 13)
-Write-Host("Copied $files files in $all_time" )
+} | Format-List -Property  @{n = "Time"; e = { $_.Hours, "Hours", $_.Minutes, "Minutes", $_.Seconds, "Seconds", $_.Milliseconds, "Milliseconds" -join " " } }
+#$time = $time.ToString().SubString(0, 13)

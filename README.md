@@ -6,7 +6,7 @@
 - [pinger](#pinger)
 - [OUI macro for Notepad++](#oui-macro-for-notepad)
 - [wol](#wol)
-
+- [copy_folders_to_one](#copy_folders_to_one)
 ---
 
 ## Pinger
@@ -97,12 +97,13 @@ You can use ready `oui.txt` from this repository or make your own fresh OUI (Org
 
    </details>
 
-   [Table of contents](#table-of-contents)
+[Table of contents](#table-of-contents)
+
 ---
 ## WOL
 Wake-on-LAN
 
-### Pinger command syntax
+### wol command syntax
 
 **.\wol.ps1** **-mac** *mac_address* [**-ip** *ip_address*] [**-help**] 
 
@@ -111,3 +112,22 @@ Wake-on-LAN
 |**-mac**|MAC address to wake up||
 |**-ip**|IP address to check ping after wake up||
 |**-help**|Help screen. No options at all to have the same.|False|
+---
+## copy_folders_to_one
+Copy files from one directory (with other directories) to only one.
+
+### copy_folders_to_one command syntax
+
+**.\copy_folders_to_one.ps1** **-source** *source_path* **-destination** *destination_path* [**-include *extention(s)***] [**-realname**] [**-help**] 
+
+|Options|Explanation|Default value|
+|---|---|:---:|
+|**-source**|Source path||
+|**-destination**|Destination path||
+|**-include**|Copy only file with this extension(s) ||
+|**-realname**|Didn't rename filenames|False|
+|**-help**|Help screen. No options at all to have the same.|False|
+
+[Up to `Table of contents`](#table-of-contents)
+
+---
