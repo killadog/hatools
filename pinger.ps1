@@ -18,6 +18,8 @@ if ($help -or !$destination) {
     @{name = 'Type'; Expression = { $($PSStyle.Foreground.BrightWhite) + $($_.'parameterValue') } },
     @{name = 'Default'; Expression = { if ($($_.'defaultValue' -notlike 'String')) { $($PSStyle.Foreground.BrightWhite) + $($_.'defaultValue') } }; align = 'Center' },
     @{name = 'Explanation'; Expression = { $($PSStyle.Foreground.BrightYellow) + $($_.'description').Text } }
+    Write-Host ("Press $($PSStyle.Background.BrightCyan)$($PSStyle.Foreground.Black)'S'$($PSStyle.Reset) to show statistics in real time")
+    Write-Host ("Press $($PSStyle.Background.BrightCyan)$($PSStyle.Foreground.Black)'Ctrl + C'$($PSStyle.Reset) or $($PSStyle.Background.BrightCyan)$($PSStyle.Foreground.Black)'Q'$($PSStyle.Reset) to stop`n")
     exit
 }
 
@@ -56,21 +58,56 @@ if ($alarm) {
     $activate_alarm = "$($hours):$minutes"
 }
 
+function Statistics {
+   
+    Write-Host -NoNewline ("`n  All/Good/Failed: ")
+    Write-Host -NoNewline ("$($PSStyle.Foreground.BrightYellow)$ping_all $($PSStyle.Foreground.BrightWhite)/ ")
+    Write-Host -NoNewline ("$($PSStyle.Foreground.BrightGreen) $ping_good$($PSStyle.Reset) (" + ($ping_good / ($ping_all / 100)) + "%) / ")
+    Write-Host ("$($PSStyle.Foreground.BrightRed)$ping_failed$($PSStyle.Reset) (" + ($ping_failed / ($ping_all / 100)) + "%)")
+    Write-Host("Latency (Min/Max): $Latency_min / $Latency_max")
+    Write-Host("       Start time: $startTime")
+    $endTime = (Get-Date)
+    Write-Host("         End time: $endTime")
+    $ElapsedTime = $endTime - $startTime
+    Write-Host("     Elapsed time: {0:hh}:{0:mm}:{0:ss}`n" -f ($ElapsedTime))
+}
+
+
 $delimeter = (Get-Culture).TextInfo.ListSeparator
 $rotate = $false
 $now = Get-Date -UFormat '%Y%m%d-%H%M%S'
 $csvfile = $env:TEMP + '\ping_' + $now + '.csv'
 $7z = 'C:\Progra~1\7-Zip\7z'
 
+$Latency_min = 0
+$Latency_max = 0
+$ping_all = 0
+$ping_good = 0
+$ping_failed = 0
+
+[console]::TreatControlCAsInput = $true
+$startTime = (Get-Date)
 while ($true) {
     $now = Get-Date -UFormat '%Y/%m/%d-%H:%M:%S'
     $ping = Test-Connection -ComputerName $destination -Count 1 -IPv4
     
+    ++$ping_all
     if ($ping.status -eq 'Success') {
         $Latency = $ping.Latency
+        if ($Latency -lt $Latency_min) {
+            $Latency_min = $Latency
+        }
+        if ($Latency -gt $Latency_max) {
+            $Latency_max = $Latency
+            if ($Latency_min -eq 0) {
+                $Latency_min = $Latency_max
+            }
+        }
+        ++$ping_good
     }
     else {
         $Latency = 'Failed'
+        ++$ping_failed
     }
 
     $result = [PSCustomObject] @{
@@ -118,5 +155,21 @@ while ($true) {
         Write-Host "Set alarm to $alarm again!"
     }
 
+    if ([console]::KeyAvailable) {
+        $key = [system.console]::readkey($true)
+        if ($key.key -eq "S") {
+            Statistics            
+        }
+    }
+
+    if ([console]::KeyAvailable) {
+        $key = [system.console]::readkey($true)
+        if ((($key.modifiers -band [consolemodifiers]"control") -and ($key.key -eq "C")) -or ($key.key -eq "Q")) {
+            Statistics            
+            break
+        }
+    }
+
     Start-Sleep $wait
 }
+
