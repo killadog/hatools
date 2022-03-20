@@ -11,15 +11,74 @@ param (
     , [parameter(Mandatory = $false)][switch] $help # This help screen. No options at all to have the same.
 )
 
+function help ($Mode) {
+    if ($Mode -ne 'shortcuts') {
+        Get-Command -Syntax $PSCommandPath
+        $help_parameters = Get-Help $PSCommandPath -Parameter * 
+        $help_parameters | Format-Table -Property @{name = 'Option'; Expression = { $($PSStyle.Foreground.BrightGreen) + "-" + $($_.'name') } },
+        @{name = 'Type'; Expression = { $($PSStyle.Foreground.BrightWhite) + $($_.'parameterValue') } },
+        @{name = 'Default'; Expression = { if ($($_.'defaultValue' -notlike 'String')) { $($PSStyle.Foreground.BrightWhite) + $($_.'defaultValue') } }; align = 'Center' },
+        @{name = 'Explanation'; Expression = { $($PSStyle.Foreground.BrightYellow) + $($_.'description').Text } }
+    }
+    Write-Host ("$($PSStyle.Foreground.BrightGreen)`nKeyboard shortcuts")
+    Write-Host ("$($PSStyle.Foreground.BrightCyan)------------------")
+    Write-Host ("$($PSStyle.Background.BrightWhite)$($PSStyle.Foreground.Black) D $($PSStyle.Reset) - destination")
+    Write-Host ("$($PSStyle.Background.BrightWhite)$($PSStyle.Foreground.Black) H $($PSStyle.Reset) - help")
+    Write-Host ("$($PSStyle.Background.BrightWhite)$($PSStyle.Foreground.Black) P $($PSStyle.Reset) - pause")
+    Write-Host ("$($PSStyle.Background.BrightWhite)$($PSStyle.Foreground.Black) S $($PSStyle.Reset) - statistics")
+    Write-Host ("$($PSStyle.Background.BrightWhite)$($PSStyle.Foreground.Black) W $($PSStyle.Reset) - wait time between pings")
+    Write-Host ("$($PSStyle.Background.BrightWhite)$($PSStyle.Foreground.Black) Ctrl + C $($PSStyle.Reset) or $($PSStyle.Background.BrightWhite)$($PSStyle.Foreground.Black) Q $($PSStyle.Reset) - stop and quit`n")
+}
+function Shortcut_check {
+    if ([console]::KeyAvailable) {
+        $key = [system.console]::readkey($true)
+        if ((($key.modifiers -band [consolemodifiers]"control") -and ($key.key -eq "C")) -or ($key.key -eq "Q")) {
+            Statistics
+            exit
+        }
+        elseif ($key.key -eq "D") {
+            $destination = Read-Host "Please enter destination"
+            Set-Variable -scope 1 -Name "destination" -Value $destination
+            break
+        }
+        elseif ($key.key -eq "H") {
+            help 'shortcuts'
+        }
+        elseif ($key.key -eq "P") {
+            Write-Host("Paused. Press any key to continue...")
+            while (![console]::KeyAvailable) {
+            }
+        }
+        elseif ($key.key -eq "S") {
+            Statistics
+        }
+        elseif ($key.key -eq "W") {
+            $wait = Read-Host "Please enter wait time"
+            if ($wait -eq 0) { $wait = 1 }
+            Set-Variable -scope 1 -Name "wait" -Value $wait
+            break
+        }
+        else {
+            Write-Host("`nPress $($PSStyle.Background.BrightWhite)$($PSStyle.Foreground.Black) h $($PSStyle.Reset) for help`n")
+        } 
+    }
+}
+
+function Statistics {
+    Write-Host -NoNewline ("`n  All/Good/Failed: ")
+    Write-Host -NoNewline ("$($PSStyle.Foreground.BrightYellow)$ping_all $($PSStyle.Foreground.BrightWhite)/ ")
+    Write-Host -NoNewline ("$($PSStyle.Foreground.BrightGreen) $ping_good$($PSStyle.Reset) (" + ($ping_good / ($ping_all / 100)) + "%) / ")
+    Write-Host ("$($PSStyle.Foreground.BrightRed)$ping_failed$($PSStyle.Reset) (" + ($ping_failed / ($ping_all / 100)) + "%)")
+    Write-Host("Latency (Min/Max): $Latency_min / $Latency_max")
+    Write-Host("       Start time: $startTime")
+    $endTime = (Get-Date)
+    Write-Host("              Now: $endTime")
+    $ElapsedTime = $endTime - $startTime
+    Write-Host("     Elapsed time: {0:hh}:{0:mm}:{0:ss}`n" -f ($ElapsedTime))
+}
+
 if ($help -or !$destination) {
-    Get-Command -Syntax $PSCommandPath
-    $help_parameters = Get-Help $PSCommandPath -Parameter * 
-    $help_parameters | Format-Table -Property @{name = 'Option'; Expression = { $($PSStyle.Foreground.BrightGreen) + "-" + $($_.'name') } },
-    @{name = 'Type'; Expression = { $($PSStyle.Foreground.BrightWhite) + $($_.'parameterValue') } },
-    @{name = 'Default'; Expression = { if ($($_.'defaultValue' -notlike 'String')) { $($PSStyle.Foreground.BrightWhite) + $($_.'defaultValue') } }; align = 'Center' },
-    @{name = 'Explanation'; Expression = { $($PSStyle.Foreground.BrightYellow) + $($_.'description').Text } }
-    Write-Host ("Press $($PSStyle.Background.BrightCyan)$($PSStyle.Foreground.Black)'S'$($PSStyle.Reset) to show statistics in real time")
-    Write-Host ("Press $($PSStyle.Background.BrightCyan)$($PSStyle.Foreground.Black)'Ctrl + C'$($PSStyle.Reset) or $($PSStyle.Background.BrightCyan)$($PSStyle.Foreground.Black)'Q'$($PSStyle.Reset) to stop`n")
+    help
     exit
 }
 
@@ -57,21 +116,6 @@ if ($alarm) {
     $minutes = '{0:d2}' -f [int]$minutes
     $activate_alarm = "$($hours):$minutes"
 }
-
-function Statistics {
-   
-    Write-Host -NoNewline ("`n  All/Good/Failed: ")
-    Write-Host -NoNewline ("$($PSStyle.Foreground.BrightYellow)$ping_all $($PSStyle.Foreground.BrightWhite)/ ")
-    Write-Host -NoNewline ("$($PSStyle.Foreground.BrightGreen) $ping_good$($PSStyle.Reset) (" + ($ping_good / ($ping_all / 100)) + "%) / ")
-    Write-Host ("$($PSStyle.Foreground.BrightRed)$ping_failed$($PSStyle.Reset) (" + ($ping_failed / ($ping_all / 100)) + "%)")
-    Write-Host("Latency (Min/Max): $Latency_min / $Latency_max")
-    Write-Host("       Start time: $startTime")
-    $endTime = (Get-Date)
-    Write-Host("         End time: $endTime")
-    $ElapsedTime = $endTime - $startTime
-    Write-Host("     Elapsed time: {0:hh}:{0:mm}:{0:ss}`n" -f ($ElapsedTime))
-}
-
 
 $delimeter = (Get-Culture).TextInfo.ListSeparator
 $rotate = $false
@@ -155,21 +199,10 @@ while ($true) {
         Write-Host "Set alarm to $alarm again!"
     }
 
-    if ([console]::KeyAvailable) {
-        $key = [system.console]::readkey($true)
-        if ($key.key -eq "S") {
-            Statistics            
-        }
+    $Wait_Start_Time = (Get-Date)
+ 
+    while ((New-TimeSpan -Start $Wait_Start_Time -End (Get-Date)).TotalSeconds -lt $wait) {
+        Shortcut_check
     }
-
-    if ([console]::KeyAvailable) {
-        $key = [system.console]::readkey($true)
-        if ((($key.modifiers -band [consolemodifiers]"control") -and ($key.key -eq "C")) -or ($key.key -eq "Q")) {
-            Statistics            
-            break
-        }
-    }
-
-    Start-Sleep $wait
 }
 

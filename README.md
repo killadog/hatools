@@ -26,10 +26,16 @@ Easy ping with timestamp, log, email notifications.
 |**-help**|Help screen. No options at all to have the same.|False|
 
 #### Keyboard shortcuts
+
 |Options|Keyboard shortcut|
 |---|---|
-|`S`|Show statistics|
+|`D`|Destination|
+|`H`|Help|
+|`P`|Pause|
+|`S`|Statistics|
+|`W`|Wait time between pings|
 |`Ctrl + C` or `Q`|Quit|
+
 ---
 
 ## OUI macro for Notepad++
