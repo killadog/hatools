@@ -10,7 +10,7 @@
 ---
 
 ## Pinger
-Easy ping with timestamp, log, email notifications.
+Easy ping with timestamp, log, email notifications, etc.
 
 ### Pinger command syntax
 
@@ -27,14 +27,14 @@ Easy ping with timestamp, log, email notifications.
 
 #### Keyboard shortcuts
 
-|Options|Keyboard shortcut|
+|Keyboard shortcut|Explanation|
 |---|---|
-|`D`|Destination|
-|`H`|Help|
-|`P`|Pause|
-|`S`|Statistics|
-|`W`|Wait time between pings|
-|`Ctrl + C` or `Q`|Quit|
+|` D `|Destination|
+|` H `|Help|
+|` P `|Pause|
+|` S `|Statistics|
+|` W `|Wait time between pings|
+|` Ctrl + C ` or ` Q `|Quit|
 
 ---
 
