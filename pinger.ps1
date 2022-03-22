@@ -67,8 +67,8 @@ function Shortcut_check {
 function Statistics {
     Write-Host -NoNewline ("`n  All/Good/Failed: ")
     Write-Host -NoNewline ("$($PSStyle.Foreground.BrightYellow)$ping_all $($PSStyle.Foreground.BrightWhite)/ ")
-    Write-Host -NoNewline ("$($PSStyle.Foreground.BrightGreen) $ping_good$($PSStyle.Reset) (" + ($ping_good / ($ping_all / 100)) + "%) / ")
-    Write-Host ("$($PSStyle.Foreground.BrightRed)$ping_failed$($PSStyle.Reset) (" + ($ping_failed / ($ping_all / 100)) + "%)")
+    Write-Host -NoNewline ("$($PSStyle.Foreground.BrightGreen) $ping_good$($PSStyle.Reset) ({0:N0}" -f ($ping_good / ($ping_all / 100)) + "%) / ")
+    Write-Host ("$($PSStyle.Foreground.BrightRed)$ping_failed$($PSStyle.Reset) ({0:N0}" -f ($ping_failed / ($ping_all / 100)) + "%)")
     Write-Host("Latency (Min/Max): $Latency_min / $Latency_max")
     Write-Host("       Start time: $startTime")
     $endTime = (Get-Date)
@@ -200,8 +200,7 @@ while ($true) {
     }
 
     $Wait_Start_Time = (Get-Date)
- 
-    while ((New-TimeSpan -Start $Wait_Start_Time -End (Get-Date)).TotalSeconds -lt $wait) {
+     while ((New-TimeSpan -Start $Wait_Start_Time -End (Get-Date)).TotalSeconds -lt $wait) {
         Shortcut_check
     }
 }
