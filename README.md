@@ -22,7 +22,7 @@ Easy ping with timestamp, log, email notifications, etc.
 |**-wait** *count*|Wait between pings in seconds|1|
 |**-log**| Write to CSV log file (to %TEMP%)|False|
 |**-alarm**|If -log is enabled than save log file and create new at HH:mm (one per day). Syntax: 08:05 or 8:05|False|
-|**-email**|Send email (-log and -alarm must be enabled)|False|
+|**-email**|Send email with log file at alarm time (-log and -alarm must be enabled)|False|
 |**-help**|Help screen. No options at all to have the same.|False|
 
 #### Keyboard shortcuts
