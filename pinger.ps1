@@ -186,6 +186,7 @@ while ($true) {
             $mycreds = New-Object System.Management.Automation.PSCredential ("email@example.com", $secpasswd)
             $encoding = [System.Text.Encoding]::UTF8
             $attachment = $csvfile + '.7z'
+            #[System.Net.ServicePointManager]::SecurityProtocol = "Tls,TLS11,TLS12" # Uncomment it to use TLS not SSL
             Send-MailMessage -To "email@example.com" -Subject "Ping $destination $rotate_time" -Attachments $attachment -SmtpServer "smtp.example.com" -Credential $mycreds -Port "587" -UseSsl -from "email@example.com" -Encoding $encoding
             Start-Sleep 20
             Remove-Item $attachment
