@@ -12,6 +12,12 @@
 ## Pinger
 Easy ping with timestamp, log, email notifications, etc.
 
+### Screenshot
+
+<p align="center">
+<img src="img/pinger01.png" alt="PingonatorGUI" />
+</p>
+
 ### Pinger command syntax
 
 **.\pinger.ps1** **-destination** *ip_or_name* [**-wait** *count*] [**-alarm**] [**-email**] [**-help**] 
