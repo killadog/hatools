@@ -48,7 +48,7 @@ Easy ping with timestamp, log, email notifications, etc.
 You can use ready `oui.txt` from this repository or make your own fresh OUI (Organizationally Unique Identifier) text file with Notepad++ for hash table:
 
 1. Open `oui_macro.txt` and copy/paste all from it to `%AppData%\Notepad++\shortcuts.xml`
-2. Download https://standards.ieee.org/develop/regauth/oui/oui.csv
+2. Download http://standards-oui.ieee.org/oui/oui.csv
 3. Open downloaded `oui.csv` in Notepad++. You see somethig like this:
     ```
     ...
