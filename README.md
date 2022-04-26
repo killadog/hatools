@@ -9,6 +9,7 @@
 - [copy_folders_to_one](#copy_folders_to_one)
 ---
 
+![Powershell >= 7.2](https://img.shields.io/badge/PowerShell-%20-blue)
 ## Pinger
 Easy ping with timestamp, log, email notifications, etc.
 
@@ -117,6 +118,7 @@ You can use ready `oui.txt` from this repository or make your own fresh OUI (Org
 [Table of contents](#table-of-contents)
 
 ---
+![Powershell >= 7.2](https://img.shields.io/badge/PowerShell-%20-blue)
 ## WOL
 Wake-on-LAN
 
@@ -130,6 +132,7 @@ Wake-on-LAN
 |**-ip**|IP address to check ping after wake up||
 |**-help**|Help screen. No options at all to have the same.|False|
 ---
+![Powershell >= 7.2](https://img.shields.io/badge/PowerShell-%20-blue)
 ## copy_folders_to_one
 Copy files from one directory (with other directories) to only one.
 
@@ -146,5 +149,12 @@ Copy files from one directory (with other directories) to only one.
 |**-help**|Help screen. No options at all to have the same.|False|
 
 [Up to `Table of contents`](#table-of-contents)
+
+---
+![Powershell >= 7.2](https://img.shields.io/badge/Batch-%20-green)
+## now.cmd
+Date-time converter
+
+Convert `"26 апреля 2022 г. 9:29:42"` to `"20220426_092942"`
 
 ---
