@@ -131,28 +131,33 @@ $ping_failed = 0
 
 [console]::TreatControlCAsInput = $true
 $startTime = (Get-Date)
+
+if ($null -eq $Latency_min) { $Latency_min = 9999 }
+if ($null -eq $Latency_max) { $Latency_max = 0 }
+
 while ($true) {
     $now = Get-Date -UFormat '%Y/%m/%d-%H:%M:%S'
-    $ping = Test-Connection -ComputerName $destination -Count 1 -IPv4
+	$ping = Test-Connection -ComputerName $destination -Count 1 -IPv4 -ErrorAction SilentlyContinue
+
+++$ping_all
+
+if ($null -ne $ping -and $ping.Status -eq 'Success') {
+    $Latency = $ping.Latency
     
-    ++$ping_all
-    if ($ping.status -eq 'Success') {
-        $Latency = $ping.Latency
-        if ($Latency -lt $Latency_min) {
-            $Latency_min = $Latency
-        }
-        if ($Latency -gt $Latency_max) {
-            $Latency_max = $Latency
-            if ($Latency_min -eq 0) {
-                $Latency_min = $Latency_max
-            }
-        }
-        ++$ping_good
+    if ($Latency -lt $Latency_min) {
+        $Latency_min = $Latency
     }
-    else {
-        $Latency = 'Failed'
-        ++$ping_failed
+
+    if ($Latency -gt $Latency_max) {
+        $Latency_max = $Latency
     }
+    
+    ++$ping_good
+}
+else {
+    $Latency = '$($PSStyle.Foreground.Black)Failed'
+    ++$ping_failed
+}
 
     $result = [PSCustomObject] @{
         'Time'         = $now
@@ -164,11 +169,22 @@ while ($true) {
         $result | Select-Object 'Time', 'Latency (ms)' | Export-Csv $csvfile -Append -Force -Delimiter $delimeter
     }
     
-    ($result | Format-Table -HideTableHeaders -Property `
-    @{name = 'Date'; Expression = { "$($PSStyle.Foreground.White)[$now]" } },
-    @{name = 'Destination'; Expression = { if ($ping.status -eq "Success") { $($PSStyle.Foreground.BrightGreen) + $destination }else { $($PSStyle.Foreground.BrightRed) + $destination } } },
-    @{name = 'Latency'; Expression = { if (($Latency -gt 100) -or ($Latency -eq 'Failed')) { $($PSStyle.Foreground.BrightRed) + $Latency } else { $($PSStyle.Foreground.BrightYellow) + $Latency } } } `
-    | Out-String).Trim()
+	if ($ping.Status -eq "Success") {
+		$DestColor = $PSStyle.Foreground.BrightGreen
+		$TimeColor = if ($Latency -gt 100) { $PSStyle.Foreground.BrightRed } else { $PSStyle.Foreground.BrightYellow }
+		$LatencyStr = "${Latency}ms"
+	} else {
+		$DestColor = $PSStyle.Foreground.BrightRed
+		$TimeColor = $PSStyle.Foreground.BrightRed
+		$LatencyStr = "Failed"
+	}
+
+	$datePart   = "$($PSStyle.Foreground.White)[$now]".PadRight(28)
+	$destPart   = "$($DestColor)$($destination)".PadRight(35)
+	$italicPart = "$($TimeColor)$($LatencyStr)".PadRight(20)
+
+	$printLine = "$datePart $destPart $italicPart $($PSStyle.Reset)"
+	Write-Host $printLine
     
     $Time = Get-Date -Format 'HH:mm'
 
