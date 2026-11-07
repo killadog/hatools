@@ -74,7 +74,7 @@ function Statistics {
     $endTime = (Get-Date)
     Write-Host("              Now: $endTime")
     $ElapsedTime = $endTime - $startTime
-    Write-Host("     Elapsed time: {0:hh}:{0:mm}:{0:ss}`n" -f ($ElapsedTime))
+    Write-Host("     Elapsed time: $($ElapsedTime.ToString('hh\:mm\:ss'))`n")
 }
 
 if ($help -or !$destination) {
